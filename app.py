@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, flash, session
+from flask import Flask, redirect, render_template, request, flash, session, abort
 from models import db, connect_db, User, Feedback
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import RegisterUserForm, LoginUserForm, FeedbackForm
@@ -7,6 +7,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///feedback_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 connect_db(app)
 db.create_all()
@@ -28,6 +29,10 @@ def register_user():
     This form should accept a username, password, email, first_name, and last_name.
     Make sure you are using WTForms and that your password input hides the characters
     that the user is typing! """
+
+    if "username" in session:
+        flash("You're already logged in!")
+        return redirect(f'/users/{session["username"]}')
 
     form = RegisterUserForm()
 
@@ -55,6 +60,10 @@ def login_user():
     """ Show form when submitted will login user
         Form accepts username/pwd """
 
+    if "username" in session:
+        flash("You're already logged in!")
+        return redirect(f'/users/{session["username"]}')
+
     form = LoginUserForm()
 
     if form.validate_on_submit():
@@ -75,16 +84,17 @@ def login_user():
 def show_user_profile(username):
     """ Hidden page for logged-in users """
 
+    user = User.query.get_or_404(username)
+
     if "username" not in session:
         flash("You must be logged in to view!")
-        return redirect("/")
+        abort(401)
 
     elif username != session['username']:
         flash("You can only view your profile!")
-        return redirect(f'/users/{session["username"]}')
+        abort(401)
 
     else:
-        user = User.query.get_or_404(username)
         return render_template("profile.html", user=user)
 
 
@@ -102,11 +112,11 @@ def delete_user_profile(username):
 
     if "username" not in session:
         flash("You must be logged in to view!")
-        return redirect("/")
+        abort(401)
 
     elif username != session['username']:
         flash("You can only delete your profile!")
-        return redirect(f'/users/{session["username"]}')
+        abort(401)
 
     else:
         user = User.query.get_or_404(username)
@@ -123,11 +133,11 @@ def add_feedback(username):
 
     if "username" not in session:
         flash("You must be logged in to view!")
-        return redirect("/")
+        abort(401)
 
     elif username != session['username']:
         flash("You can only give yourself feedback!")
-        return redirect(f'/users/{session["username"]}')
+        abort(401)
 
     else:
         user = User.query.get_or_404(username)
@@ -156,11 +166,11 @@ def edit_feedback(feedback_id):
 
     if "username" not in session:
         flash("You must be logged in to view!")
-        return redirect("/")
+        abort(401)
 
     elif feedback.user.username != session['username']:
         flash("You can only give yourself feedback!")
-        return redirect(f'/users/{session["username"]}')
+        abort(401)
 
     else:
         user = User.query.get_or_404(feedback.user.username)
@@ -185,13 +195,25 @@ def delete_feedback(feedback_id):
 
     if "username" not in session:
         flash("You must be logged in to view!")
-        return redirect("/")
+        abort(401)
 
     elif feedback.user.username != session['username']:
         flash("You can only give yourself feedback!")
-        return redirect(f'/users/{session["username"]}')
+        abort(401)
 
     else:
         db.session.delete(feedback)
         db.session.commit()
         return redirect(f'/users/{session["username"]}')
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(401)
+def authentication_error(e):
+    # note that we set the 401 status explicitly
+    return render_template('401.html'), 401
