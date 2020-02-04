@@ -87,6 +87,7 @@ def show_user_profile(username):
         user = User.query.get_or_404(username)
         return render_template("profile.html", user=user)
 
+
 @app.route("/logout")
 def logout_user():
     """"Logout user"""
@@ -116,7 +117,7 @@ def delete_user_profile(username):
         return redirect("/")
 
 
-@app.route("/users/<username>/feedback/add", methods=['GET','POST'])
+@app.route("/users/<username>/feedback/add", methods=['GET', 'POST'])
 def add_feedback(username):
     """ Hidden page for logged-in users """
 
@@ -135,9 +136,9 @@ def add_feedback(username):
         if form.validate_on_submit():
             title = form.title.data
             content = form.content.data
-            new_feedback=Feedback(title=title,
-                                  content=content,
-                                  username=username)
+            new_feedback = Feedback(title=title,
+                                    content=content,
+                                    username=username)
 
             db.session.add(new_feedback)
             db.session.commit()
@@ -145,3 +146,52 @@ def add_feedback(username):
             return redirect(f'/users/{session["username"]}')
 
         return render_template("feedback.html", user=user, form=form)
+
+
+@app.route("/feedback/<int:feedback_id>/update", methods=['GET', 'POST'])
+def edit_feedback(feedback_id):
+    """ Hidden page for logged-in users """
+
+    feedback = Feedback.query.get_or_404(feedback_id)
+
+    if "username" not in session:
+        flash("You must be logged in to view!")
+        return redirect("/")
+
+    elif feedback.user.username != session['username']:
+        flash("You can only give yourself feedback!")
+        return redirect(f'/users/{session["username"]}')
+
+    else:
+        user = User.query.get_or_404(feedback.user.username)
+        form = FeedbackForm(obj=feedback)
+
+        if form.validate_on_submit():
+            feedback.title = form.title.data
+            feedback.content = form.content.data
+
+            db.session.commit()
+
+            return redirect(f'/users/{session["username"]}')
+
+        return render_template("edit-feedback.html", user=user, feedback=feedback, form=form)
+
+
+@app.route("/feedback/<int:feedback_id>/delete", methods=['POST'])
+def delete_feedback(feedback_id):
+    """ Hidden page for logged-in users """
+
+    feedback = Feedback.query.get_or_404(feedback_id)
+
+    if "username" not in session:
+        flash("You must be logged in to view!")
+        return redirect("/")
+
+    elif feedback.user.username != session['username']:
+        flash("You can only give yourself feedback!")
+        return redirect(f'/users/{session["username"]}')
+
+    else:
+        db.session.delete(feedback)
+        db.session.commit()
+        return redirect(f'/users/{session["username"]}')
