@@ -11,6 +11,15 @@
 </head>
 
 <body>
+<ul>
+  {% if 'username' in session %}
+  <li><a href="/logout">Logout</a></li>
+  <li><a href="/users/{{ session.username }}">Profile</a></li>
+  {% else %}
+  <li><a href="/login">Login</a></li>
+  <li><a href="/register">Register</a></li>
+  {% endif %}
+</ul>
 
   {% with messages = get_flashed_messages() %}
   {% if messages %}

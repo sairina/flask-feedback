@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, request, flash, session
-from models import db, connect_db, User
+from models import db, connect_db, User, Feedback
 from flask_debugtoolbar import DebugToolbarExtension
-from forms import RegisterUserForm, LoginUserForm
+from forms import RegisterUserForm, LoginUserForm, FeedbackForm
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///feedback_db'
@@ -24,9 +24,9 @@ def index():
 
 @app.route("/register", methods=["GET", "POST"])
 def register_user():
-    """ Show a form that when submitted will register/create a user. 
+    """ Show a form that when submitted will register/create a user.
     This form should accept a username, password, email, first_name, and last_name.
-    Make sure you are using WTForms and that your password input hides the characters 
+    Make sure you are using WTForms and that your password input hides the characters
     that the user is typing! """
 
     form = RegisterUserForm()
@@ -43,9 +43,9 @@ def register_user():
         db.session.add(user)
         db.session.commit()
 
-        session['user_name'] = user.username
+        session['username'] = user.username
 
-        return redirect('/secret')
+        return redirect(f'/users/{user.username}')
 
     return render_template("register.html", form=form)
 
@@ -64,20 +64,84 @@ def login_user():
         user = User.authenticate(username, password)
 
         if user:
-            session['user_name'] = user.username
-            return redirect('/secret')
+            session['username'] = user.username
+            return redirect(f'/users/{user.username}')
         else:
             form.username.errors = ["Bad name/password"]
     return render_template("login.html", form=form)
 
 
-@app.route("/secret")
-def secret_route():
+@app.route("/users/<username>")
+def show_user_profile(username):
     """ Hidden page for logged-in users """
 
-    if "user_name" not in session:
+    if "username" not in session:
         flash("You must be logged in to view!")
         return redirect("/")
 
+    elif username != session['username']:
+        flash("You can only view your profile!")
+        return redirect(f'/users/{session["username"]}')
+
     else:
-        return render_template("secret.html")
+        user = User.query.get_or_404(username)
+        return render_template("profile.html", user=user)
+
+@app.route("/logout")
+def logout_user():
+    """"Logout user"""
+
+    session.pop("username")
+    return redirect("/")
+
+
+@app.route("/users/<username>/delete", methods=['POST'])
+def delete_user_profile(username):
+    """ Hidden page for logged-in users """
+
+    if "username" not in session:
+        flash("You must be logged in to view!")
+        return redirect("/")
+
+    elif username != session['username']:
+        flash("You can only delete your profile!")
+        return redirect(f'/users/{session["username"]}')
+
+    else:
+        user = User.query.get_or_404(username)
+        db.session.delete(user)
+        db.session.commit()
+        session.pop("username")
+
+        return redirect("/")
+
+
+@app.route("/users/<username>/feedback/add", methods=['GET','POST'])
+def add_feedback(username):
+    """ Hidden page for logged-in users """
+
+    if "username" not in session:
+        flash("You must be logged in to view!")
+        return redirect("/")
+
+    elif username != session['username']:
+        flash("You can only give yourself feedback!")
+        return redirect(f'/users/{session["username"]}')
+
+    else:
+        user = User.query.get_or_404(username)
+        form = FeedbackForm()
+
+        if form.validate_on_submit():
+            title = form.title.data
+            content = form.content.data
+            new_feedback=Feedback(title=title,
+                                  content=content,
+                                  username=username)
+
+            db.session.add(new_feedback)
+            db.session.commit()
+
+            return redirect(f'/users/{session["username"]}')
+
+        return render_template("feedback.html", user=user, form=form)
