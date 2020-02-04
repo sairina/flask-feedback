@@ -64,7 +64,7 @@ def login_user():
         user = User.authenticate(username, password)
 
         if user:
-            session['user_name'] = user.user_name
+            session['user_name'] = user.username
             return redirect('/secret')
         else:
             form.username.errors = ["Bad name/password"]
@@ -73,5 +73,11 @@ def login_user():
 
 @app.route("/secret")
 def secret_route():
+    """ Hidden page for logged-in users """
 
-    return "You made it!"
+    if "user_name" not in session:
+        flash("You must be logged in to view!")
+        return redirect("/")
+
+    else:
+        return render_template("secret.html")
