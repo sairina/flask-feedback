@@ -86,16 +86,12 @@ def show_user_profile(username):
 
     user = User.query.get_or_404(username)
 
-    if "username" not in session:
-        flash("You must be logged in to view!")
-        abort(401)
-
-    elif username != session['username']:
-        flash("You can only view your profile!")
-        abort(401)
+    if username in session['username'] or user.is_admin is True: # FIX, currently says any user that is admin, we can access
+        return render_template("profile.html", user=user)
 
     else:
-        return render_template("profile.html", user=user)
+        flash("You must be logged in to view")
+        abort(401)
 
 
 @app.route("/logout")

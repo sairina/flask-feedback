@@ -9,7 +9,7 @@ u1 = User(
     password="12345", # unhashed
     email="cupcake@cupcakes.com",
     first_name="I Love",
-    last_name="Cupcakes"
+    last_name="Cupcakes",
     is_admin=False
 )
 
@@ -18,7 +18,7 @@ u2 = User(
     password="12345", # unhashed
     email="taco@tacos.com",
     first_name="I Love",
-    last_name="Tacos"
+    last_name="Tacos",
     is_admin=False
 )
 

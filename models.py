@@ -27,7 +27,7 @@ class User(db.Model):
                                cascade="all, delete-orphan")
 
     @classmethod
-    def register(cls, username, pwd, email, first_name, last_name):
+    def register(cls, username, pwd, email, first_name, last_name, is_admin):
         """ Register user with hashed pwd and return user """
 
         hashed = bcrypt.generate_password_hash(pwd)
@@ -37,7 +37,8 @@ class User(db.Model):
                    password=hashed_utf8,
                    email=email,
                    first_name=first_name,
-                   last_name=last_name)
+                   last_name=last_name,
+                   is_admin=is_admin)
 
     @classmethod
     def authenticate(cls, username, pwd):
