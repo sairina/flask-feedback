@@ -1,31 +1,55 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block title %}User Profile{% endblock %} {% block content %}
+<br>
 
-{% block title %}User Profile{% endblock %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-offset-2 col-md-8 col-lg-offset-3 col-lg-6">
+            <div class="well profile">
+                <div class="col-sm-12">
+                    <div class="col-xs-12 col-sm-8">
+                        <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+                        <h4><strong>Username: </strong> {{ user.username }} </h4>
+                        <h4><strong>Email: </strong> {{ user.email }} </h4>
+                        <br>
+                        <form action="/users/{{ user.username }}/delete" method="POST">
+                            <button class="btn btn-danger">Delete My Profile</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-offset-2 col-md-8 col-lg-offset-3 col-lg-6">
+            <div class="well profile">
+                <div class="col-sm-12">
+                    <div class="col-xs-12 col-sm-8">
+                        <h2>Feedback</h2>
+                        <a class="btn btn-primary" href="/users/{{ user.username }}/feedback/add">Add Feedback</a> {% for f in user.feedback %}
+                        <div class="container">
+                            <br>
+                            <h4>{{ f.title }}</h4>
+                            <p>{{ f.content }}</p>
+                            <div class="row">
+                                <div class="col-xs-6 text-left mr-2">
+                                    <div class="previous">
+                                        <a class="btn btn-info" href="/feedback/{{ f.id }}/update">Edit Feedback</a>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <div class="next">
+                                        <form action="/feedback/{{ f.id }}/delete" method="POST">
+                                            <button class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-{% block content %}
-
-<h1>User Profile</h1>
-<h3>{{ user.first_name }} {{ user.last_name }}</h3>
-<p>Username: {{ user.username }}</p>
-<p>Email: {{ user.email }}</p>
-
-<form action="/users/{{ user.username }}/delete" method="POST">
-    <button class="btn btn-danger">Delete My Profile</button>
-</form>
-
-<h2>Feedback</h2>
-{% for f in user.feedback %}
-<div>
-    <h4>{{ f.title }}</h4>
-    <p>{{ f.content }}</p>
-    <a class="btn btn-info" href="/feedback/{{ f.id }}/update">Edit Feedback</a>
-    <form action="/feedback/{{ f.id }}/delete" method="POST">
-        <button class="btn btn-danger">Delete</button>
-    </form>
 </div>
 
-{% endfor %}
-<br>
-<br>
-<a class="btn btn-primary" href="/users/{{ user.username }}/feedback/add">Add Feedback</a>
 {% endblock %}

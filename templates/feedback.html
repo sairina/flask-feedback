@@ -1,28 +1,26 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% import 'bootstrap/wtf.html' as wtf %} {% block title %}Add Feedback{% endblock %} {% block content %}
+<br>
+<h1>Add Feedback</h1>
 
-{% block title %}Add/Edit Feedback{% endblock %}
+<div class="row">
+    <div class="col-md-4">
+        <form id="feedback-form" action="/users/{{ user.username }}/feedback/add" method="POST">
+            {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
+        </form>
+    </div>
+</div>
 
-{% block content %}
-
-<h1>Add/Edit Feedback</h1>
-
+<!--
 <form id="feedback-form" action="/users/{{ user.username }}/feedback/add" method="POST">
-    {{ form.hidden_tag() }}
-
-    {% for field in form
-           if field.widget.input_type != 'hidden' %}
+    {{ form.hidden_tag() }} {% for field in form if field.widget.input_type != 'hidden' %}
 
     <p>
-      {{ field.label }}
-      {{ field }}
-
-      {% for error in field.errors %}
-      {{ error }}
-      {% endfor %}
+        {{ field.label }} {{ field }} {% for error in field.errors %} {{ error }} {% endfor %}
     </p>
 
     {% endfor %}
 
     <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
+</form> -->
+
 {% endblock %}

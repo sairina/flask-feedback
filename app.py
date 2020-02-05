@@ -20,17 +20,14 @@ debug = DebugToolbarExtension(app)
 
 @app.route("/")
 def index():
-    """ Homepage redirects to /register """
+    """ Homepage redirects. """
 
     return redirect("/register")
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register_user():
-    """ Show a form that when submitted will register/create a user.
-    This form should accept a username, password, email, first_name, and last_name.
-    Make sure you are using WTForms and that your password input hides the characters
-    that the user is typing! """
+    """ Shows a form to register a new user. """
 
     if "username" in session:
         flash("You're already logged in!")
@@ -59,8 +56,7 @@ def register_user():
 
 @app.route("/login", methods=["GET", "POST"])
 def login_user():
-    """ Show form when submitted will login user
-        Form accepts username/pwd """
+    """ Shows form to login user. """
 
     if "username" in session:
         flash("You're already logged in!")
@@ -84,7 +80,7 @@ def login_user():
 
 @app.route("/users/<username>")
 def show_user_profile(username):
-    """ Hidden page for logged-in users """
+    """ Logged-in user: profile page """
 
     user = User.query.get_or_404(username)
 
@@ -102,7 +98,7 @@ def show_user_profile(username):
 
 @app.route("/logout")
 def logout_user():
-    """"Logout user"""
+    """"Logout user """
 
     session.pop("username")
     return redirect("/")
@@ -110,7 +106,7 @@ def logout_user():
 
 @app.route("/users/<username>/delete", methods=['POST'])
 def delete_user_profile(username):
-    """ Hidden page for logged-in users """
+    """ Logged-in user: deletes profile """
 
     if "username" not in session:
         flash("You must be logged in to view!")
@@ -131,7 +127,7 @@ def delete_user_profile(username):
 
 @app.route("/users/<username>/feedback/add", methods=['GET', 'POST'])
 def add_feedback(username):
-    """ Hidden page for logged-in users """
+    """ Logged-in user: Add feedback form """
 
     if "username" not in session:
         flash("You must be logged in to view!")
@@ -162,7 +158,7 @@ def add_feedback(username):
 
 @app.route("/feedback/<int:feedback_id>/update", methods=['GET', 'POST'])
 def edit_feedback(feedback_id):
-    """ Hidden page for logged-in users """
+    """ Logged-in user: Edit feedback form """
 
     feedback = Feedback.query.get_or_404(feedback_id)
 
@@ -191,7 +187,7 @@ def edit_feedback(feedback_id):
 
 @app.route("/feedback/<int:feedback_id>/delete", methods=['POST'])
 def delete_feedback(feedback_id):
-    """ Hidden page for logged-in users """
+    """ Logged-in user: Delete feedback form """
 
     feedback = Feedback.query.get_or_404(feedback_id)
 
@@ -211,11 +207,11 @@ def delete_feedback(feedback_id):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    # note that we set the 404 status explicitly
+    """ Creates 404 page """
     return render_template('404.html'), 404
 
 
 @app.errorhandler(401)
 def authentication_error(e):
-    # note that we set the 401 status explicitly
+    """ Creates 401 page """
     return render_template('401.html'), 401

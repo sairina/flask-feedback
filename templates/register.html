@@ -1,18 +1,13 @@
-{% extends 'base.html' %}
-{% import 'bootstrap/wtf.html' as wtf %}
-
-{% block title %}{{title}}{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% import 'bootstrap/wtf.html' as wtf %} {% block title %}{{title}}{% endblock %} {% block content %}
 <br>
 <h1>Register Here for the Good Secrets!</h1>
 
 <div class="row">
-  <div class="col-md-4">
-    <form id="register-user-form" method="POST"></form>
-    {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
-    </form>
-  </div>
+    <div class="col-md-4">
+        <form id="register-user-form" method="POST"></form>
+        {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
+        </form>
+    </div>
 </div>
 
 <!--
