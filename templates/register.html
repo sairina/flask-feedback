@@ -1,11 +1,21 @@
 {% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block title %}{{title}}{% endblock %}
 
 {% block content %}
-<h1>Register Here for the Good Secrets</h1>
+<br>
+<h1>Register Here for the Good Secrets!</h1>
 
-<form id="register-user-form" method="POST">
+<div class="row">
+  <div class="col-md-4">
+    <form id="register-user-form" method="POST"></form>
+    {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
+    </form>
+  </div>
+</div>
+
+<!--
   {{ form.hidden_tag() }}
 
   {% for field in form
@@ -23,6 +33,6 @@
   {% endfor %}
 
   <button type="submit" class="btn btn-primary">Register me!</button>
-</form>
+ -->
 
 {% endblock %}

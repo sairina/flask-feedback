@@ -2,12 +2,14 @@ from flask import Flask, redirect, render_template, request, flash, session, abo
 from models import db, connect_db, User, Feedback
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import RegisterUserForm, LoginUserForm, FeedbackForm
+from flask_bootstrap import Bootstrap
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///feedback_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+bootstrap = Bootstrap(app)
 
 connect_db(app)
 db.create_all()
