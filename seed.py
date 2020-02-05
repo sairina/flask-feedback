@@ -10,6 +10,7 @@ u1 = User(
     email="cupcake@cupcakes.com",
     first_name="I Love",
     last_name="Cupcakes"
+    is_admin=False
 )
 
 u2 = User(
@@ -18,6 +19,7 @@ u2 = User(
     email="taco@tacos.com",
     first_name="I Love",
     last_name="Tacos"
+    is_admin=False
 )
 
 db.session.add_all([u1, u2])

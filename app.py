@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, flash, session, abort
+from flask import Flask, redirect, render_template, flash, session, abort
 from models import db, connect_db, User, Feedback
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import RegisterUserForm, LoginUserForm, FeedbackForm
@@ -41,8 +41,10 @@ def register_user():
         email = form.email.data
         first_name = form.first_name.data
         last_name = form.last_name.data
+        is_admin = form.is_admin.data
 
-        user = User.register(username, password, email, first_name, last_name)
+        user = User.register(username, password, email, first_name,
+                             last_name, is_admin)
 
         db.session.add(user)
         db.session.commit()

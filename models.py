@@ -21,9 +21,10 @@ class User(db.Model):
     email = db.Column(db.Text, nullable=False)
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
-    feedback = db.relationship("Feedback", single_parent=True, cascade="all, delete-orphan")
-
+    feedback = db.relationship("Feedback", single_parent=True,
+                               cascade="all, delete-orphan")
 
     @classmethod
     def register(cls, username, pwd, email, first_name, last_name):
